@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "databricksName": {
+            "value": "adb-poc-test"
+        },
+        "managedResourceGroupName": {
+            "value": "adb-poc-test-mrg"
+        },
+        "vnetResourceGroup": {
+            "value": "adb-poc-test-vnet-rg"
+        },
+        "vnetName": {
+            "value": "vnet-adb-poc-test"
+        },
+        "privateSubnetName": {
+            "value": "private-subnet"
+        },
+        "publicSubnetName": {
+            "value": "public-subnet"
+        },
+        "tags": {
+            "value": {
+
+                "Environment": "Development"
+            }
+        }
+    }
+}
