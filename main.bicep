@@ -1,13 +1,18 @@
-param vnetResourceGroup string
+param KeyName string
+param VaultURI string
+param keyVersion string
 
-@description('Name of the Azure Databricks workspace to create')
-param databricksName string
+@description('prefix used to name resources')
+var prefix = substring(resourceGroup().name, 0, length(resourceGroup().name)-3)
+
+@description('VNET resource group name')
+var vnetResourceGroup = '${prefix}-vnet-rg'
 
 @description('Managed resource group name')
-param managedResourceGroupName string
+var managedResourceGroupName = '${prefix}-mrg'
 
 @description('Name of VNet where Databricks Cluster should be created')
-param vnetName string
+var vnetName = 'vnet-${prefix}'
  
 @description('The name of the container Subnet')
 param privateSubnetName string
@@ -15,17 +20,14 @@ param privateSubnetName string
 @description('The name of the host Subnet')
 param publicSubnetName string
 
-@description('Key Vault location')
-param location string = resourceGroup().location
-
 param sku string = 'premium'
 
 @description('Tags')
 param tags object = {}
 
 resource databricks 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
-  name: databricksName
-  location: location
+  name: prefix
+  location: resourceGroup().location
   sku: {
     name: sku
   }
@@ -48,6 +50,20 @@ resource databricks 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
       }
       customPublicSubnetName: {
         value: publicSubnetName
+      }
+    }
+
+    encryption: {
+      entities: {
+        managedDisk: {
+          keySource: 'Microsoft.Keyvault'
+          keyVaultProperties: {
+            keyName: KeyName
+            keyVaultUri: VaultURI
+            keyVersion: keyVersion
+          }
+          rotationToLatestKeyVersionEnabled: true
+        }
       }
     }
   }
