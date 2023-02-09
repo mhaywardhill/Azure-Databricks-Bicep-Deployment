@@ -14,5 +14,5 @@ git clone https://github.com/mhaywardhill/azure-databricks-bicep-deployment.git
 from a PowerShell prompt go into the repository and navigate to the azure-databricks-bicep-deployment folder:
 
 ```
-.\deploy.ps1
+.\deploy.ps1 '<resource group name>'
 ```
