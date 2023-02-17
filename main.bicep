@@ -1,5 +1,5 @@
 param KeyName string
-param VaultURI string
+param VaultName string
 param keyVersion string
 
 @description('prefix used to name resources')
@@ -59,7 +59,7 @@ resource databricks 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
           keySource: 'Microsoft.Keyvault'
           keyVaultProperties: {
             keyName: KeyName
-            keyVaultUri: VaultURI
+            keyVaultUri: 'https://${VaultName}.vault.azure.net'
             keyVersion: keyVersion
           }
           rotationToLatestKeyVersionEnabled: true
@@ -69,3 +69,20 @@ resource databricks 'Microsoft.Databricks/workspaces@2022-04-01-preview' = {
   }
   tags: tags
 }
+
+resource akvaccesspolicy 'Microsoft.KeyVault/vaults/accessPolicies@2021-10-01' = {
+  name: '${VaultName}/add'
+  properties: {
+    accessPolicies: [
+      {
+        objectId: databricks.properties.managedDiskIdentity.principalId
+        permissions: {
+          keys: [ 'get', 'wrapKey', 'unwrapKey' ]
+        }
+        tenantId: databricks.properties.managedDiskIdentity.tenantId
+      }
+    ]
+  }
+}
+
+
